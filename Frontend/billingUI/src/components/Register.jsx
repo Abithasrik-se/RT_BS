@@ -96,7 +96,7 @@ const Register = () => {
   return (
   <div className="register-page d-flex justify-content-center align-items-center vh-100">
     <div className="card p-4 shadow-lg" style={{ width: "100%", maxWidth: "600px" }}>
-      <h3 className="text-center mb-4 text-primary">Create Your Account</h3>
+      <h3 className="text-center mb-4 text-primary">Create New User Account</h3>
 
       {error && <div className="alert alert-danger">{error}</div>}
       {success && <div className="alert alert-success">{success}</div>}
@@ -176,7 +176,7 @@ const Register = () => {
         </div>
 
         <button type="submit" className="btn btn-primary w-100">
-          Register
+          Create
         </button>
       </form>
     </div>
