@@ -176,7 +176,7 @@ const Register = () => {
         </div>
 
         <button type="submit" className="btn btn-primary w-100">
-          Create
+          Create User
         </button>
       </form>
     </div>
