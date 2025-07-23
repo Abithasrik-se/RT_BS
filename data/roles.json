@@ -1,6 +1,0 @@
-[
-  { "value": "user", "label": "User" },
-  { "value": "admin", "label": "Admin" },
-  { "value": "moderator", "label": "Moderator" },
-  { "value": "guest", "label": "Guest" }
-]
