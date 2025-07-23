@@ -1,7 +1,9 @@
 # accounts/urls.py
 from django.urls import path
-from .views import TenantRegisterView
+from . import views
 
 urlpatterns = [
-    path('tenant/register/', TenantRegisterView.as_view(), name='tenant-register'),
+    path('register/', views.register_user_view, name='tenant-register'),
+    path('login/', views.login_user_view, name='user-login'),
+
 ]

@@ -1,13 +1,71 @@
-from django.shortcuts import render
-from rest_framework.views import APIView
+# accounts/views.py
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import TenantRegistrationSerializer
+from .serializers import UserRegistrationSerializer
+from rest_framework.authtoken.models import Token
+from django.contrib.auth import authenticate
+from django.contrib.auth import get_user_model
 
-class TenantRegisterView(APIView):
-    def post(self, request):
-        serializer = TenantRegistrationSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"message": "Tenant and first user registered successfully"}, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+def register_user_view(request):
+    serializer = UserRegistrationSerializer(data=request.data)
+    if serializer.is_valid():
+        user = serializer.save()
+        return Response({
+            "message": "User registered successfully",
+            "username": user.username,
+            "email": user.email,
+            "role": user.role
+        }, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+@api_view(['POST'])
+def login_user_view(request):
+    email = request.data.get('email')
+    password = request.data.get('password')
+
+    if not email or not password:
+        return Response({'error': 'Please provide both email and password.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    user = authenticate(request, email=email, password=password)
+
+    if not user:
+        return Response({'error': 'Username and password wrong'}, status=status.HTTP_401_UNAUTHORIZED)
+
+    token, created = Token.objects.get_or_create(user=user)
+
+    return Response({
+        'token': token.key,
+        'user': {
+            'username': user.username,
+            'email': user.email,
+            'role': user.role
+        }
+    })
+
+
+User = get_user_model()
+
+@api_view(['POST'])
+def forget_password_view(request):
+    email = request.data.get('email')
+    try:
+        user = User.objects.get(email=email)
+    except User.DoesNotExist:
+        return Response({'error': 'User with this email does not exist.'}, status=400)
+
+    token = default_token_generator.make_token(user)
+    reset_link = f"http://localhost:3000/reset-password/{user.pk}/{token}/"  # Replace with your frontend URL
+
+    send_mail(
+        subject='Password Reset Request',
+        message=f'Click the link to reset your password: {reset_link}',
+        from_email=None,
+        recipient_list=[email],
+    )
+
+    return Response({'message': 'Password reset link sent to email.'})
