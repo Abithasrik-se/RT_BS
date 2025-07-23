@@ -1,5 +1,4 @@
 import React from 'react'
-import adminData from '../../data/admin.json'
 import '../css/AdminLogin.css'
 import { useState } from 'react'
 import { useNavigate } from "react-router-dom";
@@ -22,12 +21,7 @@ const AdminLogin = () => {
 
   const handleSubmit = async(e) => {
     e.preventDefault();
-    
-
-
     const { username, password } = form;
-    const { admin } = adminData;
-
 
     if (!username || !password) {
       setError("Both fields are required.");
@@ -35,49 +29,29 @@ const AdminLogin = () => {
     }
 
      // Newly added
-
-
      try {
-      // JWT login request to Django's /api/token/
-      const response = await axios.post('http://localhost:8000/api/token/', form);
+    // Fetch all admins
+    const response = await axios.get('http://localhost:3001/admin');
+    const admins = response.data;
 
-      const { access, refresh } = response.data;
+    // Try to find user with matching username
+    const user = (admins) => admins.username === username
 
-      // Store JWT tokens in localStorage
-      localStorage.setItem('access_token', access);
-      localStorage.setItem('refresh_token', refresh);
-
-      // Set Axios default Authorization header
-      axios.defaults.headers.common['Authorization'] = `Bearer ${access}`;
-
-      // Redirect to dashboard
-      navigate('/dashboard');
-
-    } catch (err) {
-      if (err.response?.status === 401) {
-        setError('Invalid username or password');
+    if (user) {
+      if (admins.password === password) {
+        setSuccess("Login successful!");
+        setTimeout(() => navigate("/dashboard"), 1000);
       } else {
-        setError('Server error. Please try again later.');
-      }
-    }
-  };
-
-
-     //here
-
-    if (username === admin.username && password === admin.password) {
-      setSuccess("Login successful!");
-      setTimeout(() => navigate("/dashboard"), 1000);
-    } 
-    else if (username === admin.username && password !== admin.password) {
         setError("Incorrect Password.");
+      }
+    } else {
+      setError("Incorrect Username.");
     }
-    else if (username !== admin.username && password === admin.password) {
-        setError("Incorrect Username.");
+  } catch (err) {
+    console.error("API Error:", err);
+    setError("Server error. Please try again later.");
   }
-  else{
-    setError("Invalid Credentials.")
-  }};
+};
 
   return (
     <div className="login-container">
@@ -90,7 +64,7 @@ const AdminLogin = () => {
         <label>Username</label>
         <input
           type="text"
-          name="username"
+          name="username" className="bg-light"
           value={form.username}
           onChange={handleChange}
           placeholder="Enter admin username"
@@ -100,6 +74,7 @@ const AdminLogin = () => {
         <input
           type="password"
           name="password"
+          className="bg-light"
           value={form.password}
           onChange={handleChange}
           placeholder="Enter password"
