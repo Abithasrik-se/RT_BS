@@ -35,7 +35,7 @@ const AdminLogin = () => {
       const data = response.data;
 
       // Save token and user details to localStorage (optional)
-      localStorage.setItem("token", data.token);
+      localStorage.setItem("token", data.access);
       localStorage.setItem("user", JSON.stringify(data.user));
 
       setSuccess("Login successful!");
