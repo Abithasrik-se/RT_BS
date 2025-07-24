@@ -1,11 +1,18 @@
 # accounts/views.py
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view,authentication_classes,permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import UserRegistrationSerializer
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
 from django.contrib.auth import get_user_model
+from django.contrib.auth.tokens import default_token_generator
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+
+
+
+User = get_user_model()
 
 
 @api_view(['POST'])
@@ -48,7 +55,6 @@ def login_user_view(request):
     })
 
 
-User = get_user_model()
 
 @api_view(['POST'])
 def forget_password_view(request):
@@ -69,3 +75,31 @@ def forget_password_view(request):
     )
 
     return Response({'message': 'Password reset link sent to email.'})
+
+
+@api_view(['POST'])
+def reset_password_view(request, uid, token):
+    try:
+        user = User.objects.get(pk=uid)
+    except User.DoesNotExist:
+        return Response({'error': 'Invalid user.'}, status=400)
+
+    if not default_token_generator.check_token(user, token):
+        return Response({'error': 'Invalid or expired token.'}, status=400)
+
+    password = request.data.get('password')
+    if not password:
+        return Response({'error': 'Password is required.'}, status=400)
+
+    user.set_password(password)
+    user.save()
+    return Response({'message': 'Password reset successful.'})
+
+
+
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def logout_user_view(request):
+    request.user.auth_token.delete()
+    return Response({'message': 'Logout successful.'})
