@@ -40,9 +40,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
-    'account'
+    'account',
+     'corsheaders'
 ]
 AUTH_USER_MODEL = 'account.CustomUser'
+
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -52,6 +55,13 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+] + MIDDLEWARE
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",  # React frontend
 ]
 
 ROOT_URLCONF = 'billing.urls'

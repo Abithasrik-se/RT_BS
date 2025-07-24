@@ -1,0 +1,54 @@
+/* Center the login container */
+.login-container {
+  background: linear-gradient(135deg, #1e3c72, #2a5298);
+  padding: 40px 20px;
+}
+
+/* The form box already has Bootstrap shadow-lg, rounded, bg-white, etc. */
+.login-box {
+  max-width: 400px;
+  width: 100%;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-box:hover {
+  transform: scale(1.01);
+}
+
+/* Error and success pop-in */
+.error,
+.success {
+  padding: 12px 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-weight: 600;
+  opacity: 0;
+  animation: popin 0.35s forwards ease-in-out;
+  box-sizing: border-box;
+  font-size: 0.95rem;
+}
+
+/* Styled with Bootstrap-compatible color schemes */
+.error {
+  background-color: #f8d7da;
+  color: #842029;
+  border: 1.5px solid #f5c2c7;
+}
+
+.success {
+  background-color: #d1e7dd;
+  color: #0f5132;
+  border: 1.5px solid #badbcc;
+}
+
+/* Animation */
+@keyframes popin {
+  0% {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
