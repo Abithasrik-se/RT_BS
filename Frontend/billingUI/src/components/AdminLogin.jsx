@@ -4,11 +4,17 @@ import { useState } from 'react'
 import { useNavigate } from "react-router-dom";
 import axios from 'axios'
 
+import { useDispatch } from 'react-redux';
+import { loginSuccess } from '../redux/authSlice';
+import { saveAuthToStorage } from '../utils/authUtils';
+
 const AdminLogin = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -32,18 +38,24 @@ const AdminLogin = () => {
         { headers: { 'Content-Type': 'application/json' } }
       );
 
-      const data = response.data;
 
-      // Save token and user details to localStorage (optional)
-      localStorage.setItem("token", data.access);
-      localStorage.setItem("user", JSON.stringify(data.user));
+      console.log(response.data);
+      
+
+      const { access: token, user } = response.data;
+      const role = user.role;
+
+  
+      dispatch(loginSuccess({ token, role }));
+      saveAuthToStorage({ token, role });
 
       setSuccess("Login successful!");
       setTimeout(() => navigate("/dashboard"), 1000);
 
     } catch (err) {
-      if (err.response && err.response.data && err.response.data.error) {
+      if (err) {
         setError(err.response.data.error);
+        console.log(err)
       } else {
         setError("Something went wrong. Please try again.");
       }
@@ -90,10 +102,7 @@ const AdminLogin = () => {
 
     <button type="submit" className="btn btn-primary w-100 fw-bold">Login</button>
   </form>
-</div>
-
-
-    
+</div>    
   );
 }
 
