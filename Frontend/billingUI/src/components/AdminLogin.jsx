@@ -3,10 +3,10 @@ import '../css/AdminLogin.css'
 import { useState } from 'react'
 import { useNavigate } from "react-router-dom";
 import axios from 'axios'
-
 import { useDispatch } from 'react-redux';
-import { loginSuccess } from '../redux/authSlice';
-import { saveAuthToStorage } from '../utils/authUtils';
+import { saveAuthToStorage} from '../utils/utilities';
+
+import { Link } from "react-router-dom";
 
 const AdminLogin = () => {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -42,15 +42,15 @@ const AdminLogin = () => {
       console.log(response.data);
       
 
-      const { access: token, user } = response.data;
+      const { token, user } = response.data;
       const role = user.role;
 
   
-      dispatch(loginSuccess({ token, role }));
+ 
       saveAuthToStorage({ token, role });
-
+  
       setSuccess("Login successful!");
-      setTimeout(() => navigate("/dashboard"), 1000);
+      setTimeout(() => navigate("/dashbord"), 1000);
 
     } catch (err) {
       if (err) {
@@ -61,7 +61,8 @@ const AdminLogin = () => {
       }
     }
   };
-
+  
+      
   return (
 <div className="login-container d-flex justify-content-center align-items-center min-vh-100 bg-gradient">
   <form onSubmit={handleSubmit} className="login-box shadow-lg p-5 rounded bg-white">
@@ -97,7 +98,9 @@ const AdminLogin = () => {
     </div>
 
     <div className="text-end mb-3">
-      <a href="#" className="text-decoration-none text-primary small">Forgot password?</a>
+      <p className="mt-2">
+        <Link to="/forget-password" className="text-primary" style={{ textDecoration: "none" }}>Forgot Password?</Link>
+      </p>
     </div>
 
     <button type="submit" className="btn btn-primary w-100 fw-bold">Login</button>

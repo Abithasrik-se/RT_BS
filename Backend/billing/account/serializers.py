@@ -1,15 +1,38 @@
 from rest_framework import serializers
 from .models import CustomUser
 from django.contrib.auth.password_validation import validate_password
+from .models import CustomUser, Tenant
+from django.contrib.auth import get_user_model
+
+
+User = get_user_model()
+
+class UserSerailizer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = '__all__'
+        
+        
+class TenantSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tenant
+        fields = '__all__'
+
+class CustomUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'image', 'role', 'tenant']
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
     confirm_password = serializers.CharField(write_only=True, required=True)
+    tenant_id = serializers.IntegerField(write_only=True)
+
 
     class Meta:
         model = CustomUser
-        fields = ['username', 'email', 'first_name', 'last_name', 'image', 'role', 'password', 'confirm_password']
+        fields = ['username', 'email', 'first_name', 'last_name', 'tenant_id','image', 'role', 'password', 'confirm_password']
 
     def validate_email(self, value):
         if CustomUser.objects.filter(email=value).exists():
@@ -22,9 +45,13 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
+        tenant_id = validated_data.pop('tenant_id')
+        tenant = Tenant.objects.get(id=tenant_id)
+        
         validated_data.pop('confirm_password')
         user = CustomUser.objects.create_user(
             username=validated_data['username'],
+            tenant=tenant,
             email=validated_data['email'],
             first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],

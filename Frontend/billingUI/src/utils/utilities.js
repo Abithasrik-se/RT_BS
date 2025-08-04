@@ -1,5 +1,9 @@
+import {loginSuccess} from '../redux/authSlice'
 
-export const saveAuthToStorage = ({ token, role }) => {
+
+
+
+export const saveAuthToStorage =({ token, role })=>{
   localStorage.setItem("token", token);
   localStorage.setItem("role", role);
 };
@@ -15,3 +19,6 @@ export const getAuthFromStorage = () => {
     role: localStorage.getItem("role")
   };
 };
+
+
+

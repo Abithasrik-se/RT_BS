@@ -38,9 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'account',  
+    'coresys',
     'rest_framework',
     'rest_framework.authtoken',
-    'account'
 ]
 AUTH_USER_MODEL = 'account.CustomUser'
 
@@ -52,6 +53,14 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+] + MIDDLEWARE
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",  # React frontend
 ]
 
 ROOT_URLCONF = 'billing.urls'
@@ -79,8 +88,12 @@ WSGI_APPLICATION = 'billing.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'billing',
+        'USER': 'root',   # Ensure this is the correct MySQL user
+        'PASSWORD': 'Getin@123',  # Ensure this is the correct MySQL password
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
 }
 
@@ -131,5 +144,9 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  
-DEFAULT_FROM_EMAIL = 'saravanangetin@gmail.com'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'saravanangetin@gmail.com'
+EMAIL_HOST_PASSWORD = 'zfex gtco pnsa gjun'
